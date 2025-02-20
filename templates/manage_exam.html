@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Exams</title>
+</head>
+<body>
+    <h2>Manage Exams</h2>
+    
+    <form action="{{ url_for('add_exam') }}" method="POST">
+        <input type="text" name="name" placeholder="Exam Name" required>
+        <input type="date" name="date" required>
+        <input type="number" name="duration" placeholder="Duration (minutes)" required>
+        <button type="submit">Add Exam</button>
+    </form>
+    
+    <h3>Existing Exams</h3>
+    <ul>
+        {% for exam in exams %}
+        <li>{{ exam.name }} - {{ exam.date }} - {{ exam.duration }} minutes 
+            <a href="{{ url_for('delete_exam', exam_id=exam.id) }}">Delete</a>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

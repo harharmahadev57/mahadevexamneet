@@ -1,7 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for, session
+import cloudinary.uploader
+import os
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # सुरक्षा के लिए कोई भी strong key डालें
+
+# **Cloudinary Configuration (config.py इंपोर्ट करें)**
+import config
 
 # **फिक्स्ड एडमिन लॉगिन डिटेल्स**
 ADMIN_EMAIL = "karanvachhani47@gmail.com"
@@ -42,20 +47,45 @@ def login():
 @app.route('/admin_dashboard')
 def admin_dashboard():
     if session.get('user') == "admin":
-        return "Welcome Admin! This is your dashboard."
+        return render_template("admin_dashboard.html")
     else:
         return redirect(url_for('home'))
 
 @app.route('/student_dashboard')
 def student_dashboard():
     if session.get('user') == "student":
-        return "Welcome Student! This is your dashboard."
+        return render_template("student_dashboard.html")
     else:
         return redirect(url_for('home'))
 
 @app.route('/logout')
 def logout():
     session.pop('user', None)
+    return redirect(url_for('home'))
+
+# **📌 Exam PDF Upload Feature**
+@app.route("/upload_exam", methods=["POST"])
+def upload_exam():
+    if session.get('user') != "admin":
+        return redirect(url_for('home'))
+
+    if "exam_pdf" not in request.files:
+        return "No file uploaded", 400
+
+    pdf_file = request.files["exam_pdf"]
+    if pdf_file.filename == "":
+        return "No selected file", 400
+
+    # Upload to Cloudinary
+    result = cloudinary.uploader.upload(pdf_file, resource_type="raw")
+    pdf_url = result["secure_url"]
+
+    return f"Exam Uploaded! View Here: <a href='{pdf_url}' target='_blank'>{pdf_url}</a>"
+
+@app.route("/upload_exam_page")
+def upload_exam_page():
+    if session.get('user') == "admin":
+        return render_template("upload.html")
     return redirect(url_for('home'))
 
 if __name__ == '__main__':

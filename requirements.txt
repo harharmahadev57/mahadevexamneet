@@ -1,4 +1,6 @@
-Flask
+flask
 gunicorn
-cloudinary
-mysql-connector-python
+flask-mysql
+flask-cors
+flask-jwt-extended
+werkzeug

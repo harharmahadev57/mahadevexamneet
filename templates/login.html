@@ -4,33 +4,21 @@
     <title>Login</title>
 </head>
 <body>
-    <h2>Login</h2>
-    <form method="post">
+    <h2>Login Page</h2>
+    <form action="/login" method="post">
+        <label>Email:</label>
+        <input type="email" name="email" required><br><br>
+        
+        <label>Password:</label>
+        <input type="password" name="password" required><br><br>
+
         <label>Select User Type:</label>
         <select name="user_type">
-            <option value="student">Student</option>
             <option value="admin">Admin</option>
-        </select>
-        <br><br>
-        <label>Email:</label>
-        <input type="email" name="email" required>
-        <br><br>
-        <div id="passwordField">
-            <label>Password:</label>
-            <input type="password" name="password">
-        </div>
-        <br>
+            <option value="student">Student</option>
+        </select><br><br>
+
         <button type="submit">Login</button>
     </form>
-
-    <script>
-        document.querySelector("select[name='user_type']").addEventListener("change", function() {
-            if (this.value === "admin") {
-                document.getElementById("passwordField").style.display = "none";
-            } else {
-                document.getElementById("passwordField").style.display = "block";
-            }
-        });
-    </script>
 </body>
 </html>

@@ -1,69 +1,62 @@
-from flask import Flask, render_template, request, session, redirect, url_for
-import random
-import smtplib
+from flask import Flask, render_template, request, redirect, url_for, session
 
 app = Flask(__name__)
-app.secret_key = "your_secret_key"
+app.secret_key = 'your_secret_key'  # सुरक्षा के लिए कोई भी strong key डालें
 
-# Dummy Admin और Student Data (इसे बाद में डेटाबेस से जोड़ा जा सकता है)
-ADMIN_EMAIL = "admin@example.com"
-STUDENT_DATA = {"student1@example.com": "password123"}  
-ADMIN_OTP = None  # OTP स्टोर करने के लिए
+# **फिक्स्ड एडमिन लॉगिन डिटेल्स**
+ADMIN_EMAIL = "karanvachhani47@gmail.com"
+ADMIN_PASSWORD = "Alpha7777"
 
-@app.route("/", methods=["GET", "POST"])
+# **स्टूडेंट लॉगिन डाटा (डेमो के लिए Dictionary में रखा है, इसे Database में स्टोर कर सकते हैं)**
+students = {
+    "student1@gmail.com": "student123",
+    "student2@gmail.com": "password456"
+}
+
+@app.route('/')
+def home():
+    return render_template('login.html')
+
+@app.route('/login', methods=['POST'])
 def login():
-    global ADMIN_OTP
-    if request.method == "POST":
-        user_type = request.form["user_type"]
-        email = request.form["email"]
-        password = request.form.get("password")
+    email = request.form['email']
+    password = request.form['password']
+    user_type = request.form['user_type']  # **यह बताएगा कि लॉगिन Admin है या Student**
 
-        if user_type == "admin":
-            ADMIN_OTP = random.randint(100000, 999999)
-            send_email(email, ADMIN_OTP)
-            session["admin_email"] = email
-            return redirect(url_for("admin_verify"))
-        elif user_type == "student":
-            if email in STUDENT_DATA and STUDENT_DATA[email] == password:
-                session["student_logged_in"] = True
-                return redirect(url_for("student_dashboard"))
-            else:
-                return "Invalid Student Credentials!"
-    return render_template("login.html")
-
-@app.route("/admin_verify", methods=["GET", "POST"])
-def admin_verify():
-    if request.method == "POST":
-        otp = request.form["otp"]
-        if int(otp) == ADMIN_OTP:
-            session["admin_logged_in"] = True
-            return redirect(url_for("admin_dashboard"))
+    if user_type == "admin":
+        if email == ADMIN_EMAIL and password == ADMIN_PASSWORD:
+            session['user'] = "admin"
+            return redirect(url_for('admin_dashboard'))
         else:
-            return "Invalid OTP!"
-    return render_template("admin_verify.html")
+            return "Invalid Admin Credentials! Please try again."
 
-@app.route("/admin_dashboard")
+    elif user_type == "student":
+        if email in students and students[email] == password:
+            session['user'] = "student"
+            return redirect(url_for('student_dashboard'))
+        else:
+            return "Invalid Student Credentials! Please try again."
+
+    return redirect(url_for('home'))
+
+@app.route('/admin_dashboard')
 def admin_dashboard():
-    if not session.get("admin_logged_in"):
-        return redirect(url_for("login"))
-    return "Welcome, Admin!"
+    if session.get('user') == "admin":
+        return "Welcome Admin! This is your dashboard."
+    else:
+        return redirect(url_for('home'))
 
-@app.route("/student_dashboard")
+@app.route('/student_dashboard')
 def student_dashboard():
-    if not session.get("student_logged_in"):
-        return redirect(url_for("login"))
-    return "Welcome, Student!"
+    if session.get('user') == "student":
+        return "Welcome Student! This is your dashboard."
+    else:
+        return redirect(url_for('home'))
 
-def send_email(to_email, otp):
-    sender_email = "your-email@gmail.com"
-    sender_password = "your-email-password"
-    
-    message = f"Your OTP is {otp}"
-    server = smtplib.SMTP("smtp.gmail.com", 587)
-    server.starttls()
-    server.login(sender_email, sender_password)
-    server.sendmail(sender_email, to_email, message)
-    server.quit()
+@app.route('/logout')
+def logout():
+    session.pop('user', None)
+    return redirect(url_for('home'))
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)

@@ -1,10 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Home - Exam Portal</title>
+    <title>Exam Portal</title>
+    <script>
+        async function adminLogin() {
+            let email = document.getElementById("email").value;
+            let password = document.getElementById("password").value;
+
+            let response = await fetch("/admin/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
+
+            let result = await response.json();
+            if (result.token) {
+                localStorage.setItem("token", result.token);
+                window.location.href = "/dashboard";
+            } else {
+                alert("Login failed!");
+            }
+        }
+    </script>
 </head>
 <body>
-    <h2>Welcome to Alpha Vidhya Sankul</h2>
-    <a href="{{ url_for('student_login') }}">Student Login</a>
+    <h2>Admin Login</h2>
+    <input type="email" id="email" placeholder="Enter Email">
+    <input type="password" id="password" placeholder="Enter Password">
+    <button onclick="adminLogin()">Login</button>
 </body>
 </html>

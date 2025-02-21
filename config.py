@@ -4,5 +4,6 @@ import cloudinary.api
 
 cloudinary.config( 
   cloud_name = "dsuolsjio",  
-  api_key = "684857164112618",  
-  api_secret = "BAYsU8wkFPUKEOB1-6xNKZdo2N8"  )
+  api_key = "684851764112618",  
+  api_secret = "BAYSU8wKfPUKE0B1-6xNKZdo..."  
+)

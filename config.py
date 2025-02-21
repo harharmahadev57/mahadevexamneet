@@ -1,5 +1,9 @@
-import os
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
-class Config:
-    SECRET_KEY = os.getenv('SECRET_KEY', 'your_secret_key')
-    DATABASE_URI = 'sqlite:///database.db'
+cloudinary.config(
+    cloud_name="dsuolsjio",
+    api_key="684851764112618",
+    api_secret="BAYsU8wkFPUKEOB1-6xNKZdo2N8"
+)

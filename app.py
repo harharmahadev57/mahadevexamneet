@@ -1,87 +1,33 @@
-from flask import Flask, request, jsonify, session, redirect, url_for, render_template
-import mysql.connector
-import cloudinary
-import cloudinary.uploader
+app.py (Main Flask Application)
 
-app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # सुरक्षा के लिए कोई भी strong key डालें
+from flask import Flask, render_template, request, redirect, url_for, session from flask_mysqldb import MySQL import MySQLdb.cursors import re
 
-# **Cloudinary Configuration**
-cloudinary.config(
-    cloud_name="your_cloud_name",
-    api_key="your_api_key",
-    api_secret="your_api_secret"
-)
+app = Flask(name) app.secret_key = 'your_secret_key'
 
-# **Database Connection**
-conn = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="yourpassword",
-    database="exam_db"
-)
-cursor = conn.cursor()
+Database Configuration
 
-# **Admin Login Credentials (Fixed)**
-ADMIN_CREDENTIALS = {
-    "email": "karanvachhani47@gmail.com",
-    "password": "Alpha7777"
-}
+app.config['MYSQL_HOST'] = 'your-mysql-host' app.config['MYSQL_USER'] = 'root' app.config['MYSQL_PASSWORD'] = 'mahadev@5757' app.config['MYSQL_DB'] = 'exam_db'
 
-# **Demo Student Data (Later, Store in DB)**
-students = {
-    "student1@gmail.com": "student123",
-    "student2@gmail.com": "password456"
-}
+mysql = MySQL(app)
 
-# **Home Route**
-@app.route('/')
-def home():
-    return render_template('login.html')
+Route: Home
 
-# **Login Route**
-@app.route('/login', methods=['POST'])
-def login():
-    email = request.form['email']
-    password = request.form['password']
-    user_type = request.form['user_type']  # Admin or Student
+@app.route('/') def home(): return render_template('index.html')
 
-    if user_type == "admin":
-        if email == ADMIN_CREDENTIALS["email"] and password == ADMIN_CREDENTIALS["password"]:
-            session['user'] = "admin"
-            return redirect(url_for('admin_dashboard'))
-        else:
-            return "Invalid Admin Credentials!", 401
+Route: Admin Login
 
-    elif user_type == "student":
-        if email in students and students[email] == password:
-            session['user'] = "student"
-            return redirect(url_for('student_dashboard'))
-        else:
-            return "Invalid Student Credentials!", 401
+@app.route('/admin', methods=['GET', 'POST']) def admin_login(): if request.method == 'POST': email = request.form['email'] password = request.form['password'] if email == 'karanvachhani47@gmail.com' and password == 'Alpha777': session['admin_loggedin'] = True return redirect(url_for('admin_dashboard')) return render_template('admin_login.html')
 
-    return redirect(url_for('home'))
+Route: Admin Dashboard
 
-# **Admin Dashboard**
-@app.route('/admin_dashboard')
-def admin_dashboard():
-    if session.get('user') == "admin":
-        return render_template('admin_dashboard.html')
-    return redirect(url_for('home'))
+@app.route('/admin/dashboard') def admin_dashboard(): if 'admin_loggedin' in session: return render_template('admin_dashboard.html') return redirect(url_for('admin_login'))
 
-# **Student Dashboard**
-@app.route('/student_dashboard')
-def student_dashboard():
-    if session.get('user') == "student":
-        return render_template('student_dashboard.html')
-    return redirect(url_for('home'))
+Route: Student Login
 
-# **Logout Route**
-@app.route('/logout')
-def logout():
-    session.pop('user', None)
-    return redirect(url_for('home'))
+@app.route('/student', methods=['GET', 'POST']) def student_login(): if request.method == 'POST': phone = request.form['phone'] password = request.form['password'] cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor) cursor.execute('SELECT * FROM students WHERE phone_number = %s AND password = %s', (phone, password)) student = cursor.fetchone() if student: session['student_loggedin'] = True session['student_id'] = student['id'] return redirect(url_for('student_dashboard')) return render_template('student_login.html')
 
-# **Run App**
-if __name__ == '__main__':
-    app.run(debug=True)
+Route: Student Dashboard
+
+@app.route('/student/dashboard') def student_dashboard(): if 'student_loggedin' in session: return render_template('student_dashboard.html') return redirect(url_for('student_login'))
+
+if name == 'main': app.run(debug=True)

@@ -2,10 +2,10 @@ from flask import Flask, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
 import re
-from config import Config  
+from config import Config  # Config class import
 
 app = Flask(__name__)
-app.config.from_object(Config)  
+app.config.from_object(Config)  # Load Config
 
 mysql = MySQL(app)
 

@@ -1,27 +1,14 @@
-<h2>Welcome, Admin!</h2>
-<a href="/logout">Logout</a>
-
-<form action="/create_exam" method="POST">
-    <label>Class Name:</label>
-    <input type="text" name="class" required>
-    
-    <label>Exam Name:</label>
-    <input type="text" name="exam_name" required>
-
-    <label>Subject:</label>
-    <input type="text" name="subject" required>
-
-    <label>OMR Format:</label>
-    <input type="text" name="omr_format" required>
-
-    <label>Exam Date:</label>
-    <input type="date" name="exam_date" required>
-
-    <button type="submit">Create Exam</button>
-</form>
-
-<form action="/upload_exam" method="POST" enctype="multipart/form-data">
-    <label>Upload Exam PDF:</label>
-    <input type="file" name="exam_pdf" required>
-    <button type="submit">Upload</button>
-</form>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h1>Admin Dashboard</h1>
+    <p>Welcome, Admin!</p>
+    <a href="{{ url_for('home') }}">Logout</a>
+</body>
+</html>

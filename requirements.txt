@@ -1,6 +1,4 @@
-flask
+Flask
+Flask-MySQLdb
+python-dotenv
 gunicorn
-flask-mysql
-flask-cors
-flask-jwt-extended
-werkzeug

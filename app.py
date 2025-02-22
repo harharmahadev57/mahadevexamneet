@@ -2,19 +2,9 @@ from flask import Flask, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
 import re
-
+from config import Config  
 app = Flask(__name__)
-
-# Secret Key for Sessions
-app.secret_key = 'your_secret_key'
-
-# Database Configuration
-app.config['MYSQL_HOST'] = 'your-mysql-host'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'your_mysql_password'
-app.config['MYSQL_DB'] = 'exam_db'
-
-mysql = MySQL(app)
+app.config.from_object(Config) mysql = MySQL(app)
 
 # Route: Home
 @app.route('/')

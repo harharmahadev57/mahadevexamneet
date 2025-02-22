@@ -1,11 +1,17 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
-import re
-from config import Config  # ✅ Config क्लास इम्पोर्ट करें
+import os
 
-app = Flask(__name__)  # ❌ गलत: name  ✅ सही: __name__
-app.config.from_object(Config)  # ✅ Config को लोड करें
+# Flask App Initialize
+app = Flask(__name__)
+app.secret_key = 'your_secret_key'  # 🔑 Change this for security
+
+# Database Configurations
+app.config['MYSQL_HOST'] = 'your_mysql_host'
+app.config['MYSQL_USER'] = 'your_mysql_user'
+app.config['MYSQL_PASSWORD'] = 'your_mysql_password'
+app.config['MYSQL_DB'] = 'your_database_name'
 
 mysql = MySQL(app)
 
@@ -60,6 +66,12 @@ def student_dashboard():
         return render_template('student_dashboard.html')
     return redirect(url_for('student_login'))
 
+# Logout Route
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('home'))
+
 # Run the Flask Application
-if __name__ == "__main__":  # ❌ गलत: name == "main"  ✅ सही: __name__ == "__main__"
+if __name__ == "__main__":
     app.run(debug=True)

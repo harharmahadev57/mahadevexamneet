@@ -1,6 +1,11 @@
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
 class Config:
-    SECRET_KEY = "81d744702ecb4accadeba0f85bec5f61"
-    MYSQL_HOST = "karan-LOQ-15IAX9"
-    MYSQL_USER = "root"
-    MYSQL_PASSWORD = "mahadev@5757"
-    MYSQL_DB = "exam_db"
+    SECRET_KEY = os.getenv("SECRET_KEY")
+    MYSQL_HOST = os.getenv("MYSQL_HOST")
+    MYSQL_USER = os.getenv("MYSQL_USER")
+    MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD")
+    MYSQL_DB = os.getenv("MYSQL_DB")

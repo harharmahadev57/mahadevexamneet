@@ -2,16 +2,19 @@ from flask import Flask, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
 import re
-from config import Config  
-app = Flask(__name__)
-app.config.from_object(Config) mysql = MySQL(app)
+from config import Config  # ✅ Config क्लास इम्पोर्ट करें
 
-# Route: Home
+app = Flask(__name__)
+app.config.from_object(Config)  # ✅ Config को लोड करें
+
+mysql = MySQL(app)
+
+# Home Route
 @app.route('/')
 def home():
     return render_template('index.html')
 
-# Route: Admin Login
+# Admin Login
 @app.route('/admin', methods=['GET', 'POST'])
 def admin_login():
     if request.method == 'POST':
@@ -22,14 +25,14 @@ def admin_login():
             return redirect(url_for('admin_dashboard'))
     return render_template('admin_login.html')
 
-# Route: Admin Dashboard
+# Admin Dashboard
 @app.route('/admin/dashboard')
 def admin_dashboard():
     if 'admin_loggedin' in session:
         return render_template('admin_dashboard.html')
     return redirect(url_for('admin_login'))
 
-# Route: Student Login
+# Student Login
 @app.route('/student', methods=['GET', 'POST'])
 def student_login():
     if request.method == 'POST':
@@ -44,13 +47,19 @@ def student_login():
             return redirect(url_for('student_dashboard'))
     return render_template('student_login.html')
 
-# Route: Student Dashboard
+# Student Dashboard
 @app.route('/student/dashboard')
 def student_dashboard():
     if 'student_loggedin' in session:
         return render_template('student_dashboard.html')
     return redirect(url_for('student_login'))
 
-# Run the App
-if __name__ == '__main__':
+# Logout Route
+@app.route('/logout')
+def logout():
+    session.pop('admin_loggedin', None)
+    session.pop('student_loggedin', None)
+    return redirect(url_for('home'))
+
+if __name__ == "__main__":
     app.run(debug=True)

@@ -32,3 +32,26 @@ document.addEventListener("visibilitychange", function() {
         fetch("/record_violation", { method: "POST" });
     }
 });
+
+
+
+function adminLogin() {
+    let username = document.getElementById("username").value;
+    let password = document.getElementById("password").value;
+
+    fetch("/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.admin_id) {
+            localStorage.setItem("admin_id", data.admin_id);
+            alert("Login Successful");
+            window.location.href = "/admin_dashboard.html";
+        } else {
+            alert("Invalid Credentials");
+        }
+    });
+}

@@ -97,15 +97,22 @@ def result_analysis():
 
 
 from models import Admin
+from flask import request, jsonify
+from flask_login import login_user
 
 @app.route("/admin_login", methods=["POST"])
 def admin_login():
     data = request.json
-    admin = Admin.query.filter_by(email=data["email"], password=data["password"]).first()
+    email = data.get("email")  # यूजर से ईमेल लेना
+    password = data.get("password")  # यूजर से पासवर्ड लेना
+    
+    admin = Admin.query.filter_by(email=email, password=password).first()
+    
     if admin:
         login_user(admin)
         return jsonify({"message": "Admin Logged In"}), 200
     return jsonify({"error": "Invalid Credentials"}), 401
+
 
 
 

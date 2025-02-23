@@ -114,5 +114,34 @@ def admin_login():
     return jsonify({"error": "Invalid Credentials"}), 401
 
 
+from flask import Flask, request, jsonify, session
+from werkzeug.security import check_password_hash
+import psycopg2
 
+app = Flask(__name__)
+app.secret_key = "your_secret_key"
+
+# Database Connection
+def get_db_connection():
+    return psycopg2.connect(
+        dbname="exam_db", user="exam_user", password="your_password", host="your_host"
+    )
+
+@app.route('/admin/login', methods=['POST'])
+def admin_login():
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    cur.execute("SELECT id, password FROM admins WHERE username = %s", (username,))
+    admin = cur.fetchone()
+    
+    if admin and check_password_hash(admin[1], password):
+        session['admin_id'] = admin[0]
+        return jsonify({"message": "Login Successful", "admin_id": admin[0]}), 200
+    else:
+        return jsonify({"error": "Invalid Credentials"}), 401
 

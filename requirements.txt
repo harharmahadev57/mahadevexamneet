@@ -1,7 +1,6 @@
 Flask
-Flask-MySQLdb
-python-dotenv
+psycopg2
 gunicorn
-flask
-mysql-connector-python
-werkzeug
+Flask-WTF
+Flask-Login
+Flask-SQLAlchemy

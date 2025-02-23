@@ -1,19 +1,25 @@
-import mysql.connector
+import psycopg2
 
+# 🔑 Secret Key (अगर जरूरत हो)
 SECRET_KEY = "7d07b2e7b3c4d364d3a8dde0dc4b7c71f8f3d6600c09f9e3f0d1acf7a095437"
 
-# ✅ सबसे पहले MySQL कनेक्शन डिटेल्स को सही तरीके से डिफाइन करें
-MYSQL_HOST = "localhost"
-MYSQL_USER = "root"
-MYSQL_PASSWORD = "mahadev@5757"
-MYSQL_DB = "exam_db"
+# ✅ PostgreSQL Database Connection Details (From Render)
+DB_HOST = "dpg-cutfgqbtq21c73bemns0-a"
+DB_PORT = "5432"
+DB_NAME = "exam_db_848p"
+DB_USER = "exam_db_848p_user"
+DB_PASSWORD = "4KtEKvxuF6R4LkQZAiUimku8EkgBLqZs"
 
-# ✅ अब MySQL सर्वर से कनेक्ट करें
-db = mysql.connector.connect(
-    host=MYSQL_HOST,
-    user=MYSQL_USER,
-    password=MYSQL_PASSWORD,
-    database=MYSQL_DB
-)
-
-cursor = db.cursor()
+try:
+    # ✅ Connect to PostgreSQL Database
+    db = psycopg2.connect(
+        host=DB_HOST,
+        port=DB_PORT,
+        database=DB_NAME,
+        user=DB_USER,
+        password=DB_PASSWORD
+    )
+    
+    cursor = db.cursor()
+    
+    

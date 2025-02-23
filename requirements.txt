@@ -6,4 +6,4 @@ Flask-Login
 Flask-SQLAlchemy
 fastapi
 uvicorn
-PyJWT
+pyjwt

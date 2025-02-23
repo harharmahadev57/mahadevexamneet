@@ -44,3 +44,68 @@ def logout():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+
+from flask import jsonify
+from models import Exam
+from datetime import datetime
+
+@app.route("/create_exam", methods=["POST"])
+def create_exam():
+    data = request.json
+    new_exam = Exam(
+        exam_name=data["exam_name"],
+        exam_date=datetime.strptime(data["exam_date"], "%Y-%m-%d"),
+        question_paper=data["question_paper"],
+        answer_key=data["answer_key"]
+    )
+    db.session.add(new_exam)
+    db.session.commit()
+    return jsonify({"message": "Exam Created Successfully!"}), 201  
+
+
+
+@app.route("/submit_exam", methods=["POST"])
+@login_required
+def submit_exam():
+    data = request.json
+    exam_id = data["exam_id"]
+    answers = data["answers"]
+    
+    exam = Exam.query.get(exam_id)
+    correct_answers = exam.answer_key.split(",")  
+    score = sum(1 for i, ans in enumerate(answers) if ans == correct_answers[i])
+    
+    result = Result(
+        student_id=current_user.id,
+        exam_id=exam_id,
+        marks=score,
+        total_marks=len(correct_answers),
+        result_status="Pass" if score > (0.4 * len(correct_answers)) else "Fail"
+    )
+    db.session.add(result)
+    db.session.commit()
+    return jsonify({"message": "Exam Submitted!"}), 200
+
+
+@app.route("/result_analysis")
+@login_required
+def result_analysis():
+    results = Result.query.all()
+    data = [{"student_id": r.student_id, "exam_id": r.exam_id, "marks": r.marks, "status": r.result_status} for r in results]
+    return jsonify(data)
+
+
+from models import Admin
+
+@app.route("/admin_login", methods=["POST"])
+def admin_login():
+    data = request.json
+    admin = Admin.query.filter_by(email=data["email"], password=data["password"]).first()
+    if admin:
+        login_user(admin)
+        return jsonify({"message": "Admin Logged In"}), 200
+    return jsonify({"error": "Invalid Credentials"}), 401
+
+
+

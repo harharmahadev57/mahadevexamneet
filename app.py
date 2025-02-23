@@ -43,9 +43,7 @@ def admin_login():
         return jsonify({"error": "Email and password required"}), 400
 
     return jsonify({"message": "Login request received", "email": email}) 
-            return redirect(url_for('admin_dashboard'))
-    return render_template('admin_login.html')
-
+            
 # 🖥️ Admin Dashboard
 @app.route('/admin/dashboard')
 def admin_dashboard():

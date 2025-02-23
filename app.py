@@ -43,16 +43,6 @@ def admin_login():
         return jsonify({"error": "Email and password required"}), 400
 
     return jsonify({"message": "Login request received", "email": email}) 
-
-
-# 👨‍💼 Admin Login
-@app.route('/admin', methods=['GET', 'POST'])
-def admin_login():
-    if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
-        if email == 'admin@example.com' and password == 'admin123':
-            session['admin_loggedin'] = True
             return redirect(url_for('admin_dashboard'))
     return render_template('admin_login.html')
 

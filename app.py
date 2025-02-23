@@ -1,19 +1,35 @@
 from flask import Flask, render_template, request, redirect, url_for, session
-from flask_mysqldb import MySQL
-import MySQLdb.cursors
-from config import Config
+import psycopg2
+from psycopg2.extras import DictCursor
 
 app = Flask(__name__)
-app.config.from_object(Config)
 
-mysql = MySQL(app)
+# 🔑 Secret Key for Session Management
+app.secret_key = "7d07b2e7b3c4d364d3a8dde0dc4b7c71f8f3d6600c09f9e3f0d1acf7a095437"
 
-# Home Route
+# ✅ PostgreSQL Database Config
+DB_HOST = "dpg-cutfgqbtq21c73bemns0-a"
+DB_PORT = "5432"
+DB_NAME = "exam_db_848p"
+DB_USER = "exam_db_848p_user"
+DB_PASSWORD = "4KtEKvxuF6R4LkQZAiUimku8EkgBLqZs"
+
+# 🔌 Function to Connect to PostgreSQL
+def get_db_connection():
+    return psycopg2.connect(
+        host=DB_HOST,
+        port=DB_PORT,
+        database=DB_NAME,
+        user=DB_USER,
+        password=DB_PASSWORD
+    )
+
+# 🏠 Home Route
 @app.route('/')
 def home():
     return render_template('index.html')
 
-# Admin Login
+# 👨‍💼 Admin Login
 @app.route('/admin', methods=['GET', 'POST'])
 def admin_login():
     if request.method == 'POST':
@@ -24,29 +40,38 @@ def admin_login():
             return redirect(url_for('admin_dashboard'))
     return render_template('admin_login.html')
 
-# Admin Dashboard
+# 🖥️ Admin Dashboard
 @app.route('/admin/dashboard')
 def admin_dashboard():
     if 'admin_loggedin' in session:
         return render_template('admin_dashboard.html')
     return redirect(url_for('admin_login'))
 
-# Student Login
+# 👨‍🎓 Student Login
 @app.route('/student', methods=['GET', 'POST'])
 def student_login():
     if request.method == 'POST':
         phone = request.form['phone']
         password = request.form['password']
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        
+        # 🔌 Connect to PostgreSQL
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=DictCursor)
+
         cursor.execute('SELECT * FROM students WHERE phone_number = %s AND password = %s', (phone, password))
         student = cursor.fetchone()
+
+        cursor.close()
+        conn.close()
+
         if student:
             session['student_loggedin'] = True
             session['student_id'] = student['id']
             return redirect(url_for('student_dashboard'))
+
     return render_template('student_login.html')
 
-# Student Dashboard
+# 📚 Student Dashboard
 @app.route('/student/dashboard')
 def student_dashboard():
     if 'student_loggedin' in session:

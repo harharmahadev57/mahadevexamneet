@@ -4,3 +4,5 @@ gunicorn
 Flask-WTF
 Flask-Login
 Flask-SQLAlchemy
+fastapi
+uvicorn

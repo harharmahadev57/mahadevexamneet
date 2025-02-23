@@ -24,26 +24,23 @@ def get_db_connection():
         password=DB_PASSWORD
     )
 
-# 🏠 Home Route
-@app.route('/')
-def home():
-    return render_template('index.html')
 from flask import Flask, request, jsonify
+
+app = Flask(__name__)
 
 @app.route('/admin', methods=['POST'])
 def admin_login():
-    data = request.get_json()  # JSON डेटा को प्राप्त करें
+    data = request.get_json()
     if not data:
         return jsonify({"error": "Invalid JSON"}), 400
 
     email = data.get('email')
     password = data.get('password')
 
-    if not email or not password:
-        return jsonify({"error": "Email and password required"}), 400
+    return jsonify({"email": email, "message": "Login request received"})
 
-    return jsonify({"message": "Login request received", "email": email}) 
-            
+if __name__ == '__main__':
+    app.run(debug=True)            
 # 🖥️ Admin Dashboard
 @app.route('/admin/dashboard')
 def admin_dashboard():

@@ -1,44 +1,46 @@
-from flask import Flask, request, jsonify, render_template, session
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import create_access_token, jwt_required, JWTManager
-from db import mysql, app
-from models import create_tables
+from flask import Flask, render_template, request, redirect, url_for, flash
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, login_user, logout_user, login_required
+from models import db, Student
 
-app.config["JWT_SECRET_KEY"] = "supersecretkey"
-jwt = JWTManager(app)
+app = Flask(__name__)
+app.config.from_object('config.Config')
 
-# Create Database Tables
-create_tables()
+db.init_app(app)
 
-@app.route("/admin/login", methods=["POST"])
-def admin_login():
-    data = request.json
-    email = data.get("email")
-    password = data.get("password")
+login_manager = LoginManager()
+login_manager.init_app(app)
 
-    cursor = mysql.connection.cursor()
-    cursor.execute("SELECT * FROM admin WHERE email = %s", (email,))
-    admin = cursor.fetchone()
-    cursor.close()
+@login_manager.user_loader
+def load_user(user_id):
+    return Student.query.get(int(user_id))
 
-    if admin and check_password_hash(admin[2], password):
-        access_token = create_access_token(identity=email)
-        return jsonify({"token": access_token}), 200
+@app.route("/")
+def home():
+    return render_template("login.html")
+
+@app.route("/login", methods=["POST"])
+def login():
+    email = request.form["email"]
+    password = request.form["password"]
+    user = Student.query.filter_by(email=email, password=password).first()
+    if user:
+        login_user(user)
+        return redirect(url_for("dashboard"))
     else:
-        return jsonify({"error": "Invalid credentials"}), 401
+        flash("Invalid email or password", "danger")
+        return redirect(url_for("home"))
 
-@app.route("/student/login", methods=["POST"])
-def student_login():
-    data = request.json
-    phone = data.get("phone_number")
-    
-    cursor = mysql.connection.cursor()
-    cursor.execute("SELECT * FROM students WHERE phone_number = %s", (phone,))
-    student = cursor.fetchone()
-    cursor.close()
+@app.route("/dashboard")
+@login_required
+def dashboard():
+    return render_template("dashboard.html")
 
-    if student:
-        access_token = create_access_token(identity=phone)
-        return jsonify({"token": access_token}), 200
-    else:
-        return jsonify({"error": "Student not found"}), 404
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for("home"))
+
+if __name__ == "__main__":
+    app.run(debug=True)

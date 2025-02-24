@@ -32,3 +32,12 @@ load_dotenv()
 SECRET_KEY = os.getenv("81d744702ecb4accadeba0f85bec5f61")
 
 print("SECRET_KEY:", SECRET_KEY)  
+
+
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/")
+def home():
+    return {"message": "FastAPI is running!"}

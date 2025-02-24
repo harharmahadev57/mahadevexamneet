@@ -21,3 +21,14 @@ def login(user: LoginRequest):
         return {"message": "Login successful", "token": token}
     else:
         raise HTTPException(status_code=401, detail="Invalid Credentials")
+
+import os
+from dotenv import load_dotenv
+
+# .env फाइल को लोड करें
+load_dotenv()
+
+# SECRET_KEY को एक्सेस करें
+SECRET_KEY = os.getenv("81d744702ecb4accadeba0f85bec5f61")
+
+print("SECRET_KEY:", SECRET_KEY)  

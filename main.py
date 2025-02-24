@@ -1,7 +1,13 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+import os
 import jwt
 import datetime
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from dotenv import load_dotenv
+
+# .env फाइल को लोड करें
+load_dotenv()
+SECRET_KEY = os.getenv("SECRET_KEY", "defaultsecret")
 
 app = FastAPI()
 
@@ -17,27 +23,13 @@ class LoginRequest(BaseModel):
 @app.post("/admin")
 def login(user: LoginRequest):
     if user.email in users_db and users_db[user.email] == user.password:
-        token = jwt.encode({"email": user.email, "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=2)}, "secret", algorithm="HS256")
+        token = jwt.encode({"email": user.email, "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=2)},
+                           SECRET_KEY, algorithm="HS256")
         return {"message": "Login successful", "token": token}
     else:
         raise HTTPException(status_code=401, detail="Invalid Credentials")
 
-import os
-from dotenv import load_dotenv
-
-# .env फाइल को लोड करें
-load_dotenv()
-
-# SECRET_KEY को एक्सेस करें
-SECRET_KEY = os.getenv("81d744702ecb4accadeba0f85bec5f61")
-
-print("SECRET_KEY:", SECRET_KEY)  
-
-
-from fastapi import FastAPI
-
-app = FastAPI()
-
+# होम API
 @app.get("/")
 def home():
     return {"message": "FastAPI is running!"}

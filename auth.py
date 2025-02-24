@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 # .env से SECRET_KEY लोड करें
 load_dotenv()
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = os.getenv("81d744702ecb4accadeba0f85bec5f61")
 
 # JWT टोकन जेनरेट करने वाला फंक्शन
 def generate_token(user_email):

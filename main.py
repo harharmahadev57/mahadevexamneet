@@ -33,3 +33,12 @@ def login(user: LoginRequest):
 @app.get("/")
 def home():
     return {"message": "FastAPI is running!"}
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # यहाँ "*" सभी डोमेन को अनुमति देगा (प्रोडक्शन में इसे Specific करें)
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)

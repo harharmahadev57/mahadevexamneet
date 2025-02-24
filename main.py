@@ -42,3 +42,20 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+import os
+import uvicorn
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/")
+def home():
+    return {"message": "FastAPI is running!"}
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))  # Render पर PORT ऑटो-सेट होता है
+    uvicorn.run(app, host="0.0.0.0", port=port)
+
+from fastapi.staticfiles import StaticFiles
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
